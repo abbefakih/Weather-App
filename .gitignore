@@ -1,0 +1,17 @@
+.DS_Store
+**/.DS_Store
+DerivedData/
+build/
+*.xcuserstate
+*.xccheckout
+xcuserdata/
+*.moved-aside
+.build/
+.env
+.env.*
+*.pem
+*.p12
+*.key
+*.xcarchive
+__MACOSX/
+*.zip

@@ -1,21 +1,14 @@
-//
-//  ContentView.swift
-//  WeatherLabB2
-//
-//  Created by Abbe Fakih on 2026-11-11.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+
+    @AppStorage("weather.darkMode")
+    private var darkMode = true
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        SearchView()
+            .preferredColorScheme(darkMode ? .dark : .light)
+            .animation(.easeInOut(duration: 0.2), value: darkMode)
     }
 }
 
