@@ -4,7 +4,7 @@ import Combine
 
 @MainActor
 final class ForecastViewModel: ObservableObject {
-
+    // publicerade egenskaper: appen reagerar när värdet ändras
     @Published private(set) var forecast: WeatherForecast?
     @Published private(set) var isLoading = false
     @Published private(set) var isShowingCache = false
@@ -102,7 +102,7 @@ final class ForecastViewModel: ObservableObject {
         let intervalNanoseconds =
             UInt64(intervalMinutes) * 60 * 1_000_000_000
 
-        refreshTask = Task { [weak self] in
+        refreshTask = Task { [weak self] in // förhindrar minnesläckor.
             while !Task.isCancelled {
                 do {
                     try await Task.sleep(

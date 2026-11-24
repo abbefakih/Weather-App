@@ -16,3 +16,4 @@ final class FavoritesViewModel: ObservableObject {
         if let data = try? JSONEncoder().encode(places) { UserDefaults.standard.set(data, forKey: key) }
     }
 }
+

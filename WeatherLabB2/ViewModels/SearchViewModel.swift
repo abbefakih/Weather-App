@@ -19,19 +19,19 @@ final class SearchViewModel: ObservableObject {
     private let repository = WeatherRepository()
     private var searchTask: Task<Void, Never>?
 
-    // Local suggestions make one-letter searches possible.
+    // Swedish quick suggestions
     private let quickCities: [Location] = [
         Location(name: "Stockholm", latitude: 59.3293, longitude: 18.0686),
+        Location(name: "Göteborg", latitude: 57.7089, longitude: 11.9746),
+        Location(name: "Malmö", latitude: 55.6050, longitude: 13.0038),
+        Location(name: "Uppsala", latitude: 59.8586, longitude: 17.6389),
+        Location(name: "Ludvika", latitude: 60.1496, longitude: 15.1878),
         Location(name: "Sundsvall", latitude: 62.3908, longitude: 17.3069),
         Location(name: "Södertälje", latitude: 59.1955, longitude: 17.6253),
         Location(name: "Skellefteå", latitude: 64.7507, longitude: 20.9528),
         Location(name: "Strängnäs", latitude: 59.3774, longitude: 17.0312),
         Location(name: "Sala", latitude: 59.9199, longitude: 16.6066),
         Location(name: "Sigtuna", latitude: 59.6173, longitude: 17.7236),
-        Location(name: "Göteborg", latitude: 57.7089, longitude: 11.9746),
-        Location(name: "Malmö", latitude: 55.6050, longitude: 13.0038),
-        Location(name: "Ludvika", latitude: 60.1496, longitude: 15.1878),
-        Location(name: "Uppsala", latitude: 59.8586, longitude: 17.6389),
         Location(name: "Kiruna", latitude: 67.8558, longitude: 20.2253)
     ]
 
@@ -39,7 +39,9 @@ final class SearchViewModel: ObservableObject {
         scheduleSearch(delay: 0)
     }
 
-    private func scheduleSearch(delay: UInt64 = 350_000_000) {
+    private func scheduleSearch(
+        delay: UInt64 = 350_000_000
+    ) {
         searchTask?.cancel()
 
         let value = query.trimmingCharacters(
@@ -55,13 +57,26 @@ final class SearchViewModel: ObservableObject {
             return
         }
 
-        // A one-character search uses local Swedish suggestions.
-        if value.count == 1 {
-            results = quickCities.filter {
+        // Find Swedish local matches for every query length.
+        let localMatches = quickCities
+            .filter {
                 $0.name.range(
                     of: value,
-                    options: [.anchored, .caseInsensitive, .diacriticInsensitive]
-                ) != nil            }
+                    options: [
+                        .anchored,
+                        .caseInsensitive,
+                        .diacriticInsensitive
+                    ]
+                ) != nil
+            }
+            .sorted {
+                rank($0.name, for: value) <
+                rank($1.name, for: value)
+            }
+
+        // One-character searches use local Swedish suggestions.
+        if value.count == 1 {
+            results = localMatches
             isLoading = false
             hasSearched = true
             return
@@ -72,27 +87,49 @@ final class SearchViewModel: ObservableObject {
         searchTask = Task {
             do {
                 if delay > 0 {
-                    try await Task.sleep(nanoseconds: delay)
+                    try await Task.sleep(
+                        nanoseconds: delay
+                    )
                 }
 
                 try Task.checkCancellation()
 
-                let response = try await repository.search(value)
+                let remoteResults = try await repository.search(value)
 
                 try Task.checkCancellation()
 
-                results = response
+                // Swedish local suggestions first,
+                // followed by API results.
+                let combined = localMatches + remoteResults
+
+                var seen = Set<String>()
+
+                results = combined.filter { location in
+                    let key = String(
+                        format: "%.4f,%.4f",
+                        location.latitude,
+                        location.longitude
+                    )
+
+                    return seen.insert(key).inserted
+                }
+                .prefix(10)
+                .map { $0 }
+
                 hasSearched = true
                 errorMessage = nil
                 isLoading = false
 
             } catch is CancellationError {
-                // A newer query has replaced this search.
+                // A newer search owns the loading state.
 
             } catch {
-                guard !Task.isCancelled else { return }
+                guard !Task.isCancelled else {
+                    return
+                }
 
-                results = []
+                // Preserve local Swedish results if the API fails.
+                results = localMatches
                 errorMessage = error.localizedDescription
                 hasSearched = true
                 isLoading = false
@@ -100,4 +137,18 @@ final class SearchViewModel: ObservableObject {
         }
     }
 
+    // Exact match first, then prefix match, then other matches.
+    private func rank(
+        _ city: String,
+        for query: String
+    ) -> Int {
+        if city.compare(
+            query,
+            options: [.caseInsensitive, .diacriticInsensitive]
+        ) == .orderedSame {
+            return 0
+        }
+
+        return 1
+    }
 }

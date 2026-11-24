@@ -1,17 +1,23 @@
+
 import SwiftUI
 
 struct ContentView: View {
 
-    @AppStorage("weather.darkMode")
-    private var darkMode = true
+    @EnvironmentObject private var theme: AppTheme
 
     var body: some View {
         SearchView()
-            .preferredColorScheme(darkMode ? .dark : .light)
-            .animation(.easeInOut(duration: 0.2), value: darkMode)
+            .preferredColorScheme(
+                theme.isDarkMode ? .dark : .light
+            )
+            .animation(
+                .easeInOut(duration: 0.25),
+                value: theme.isDarkMode
+            )
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(AppTheme())
 }

@@ -69,7 +69,7 @@
 
         private var formattedDate: String {
             let formatter = ISO8601DateFormatter()
-
+            // datum som kommer i ISO 8601-format & görs läsbart för användaren
             guard let date = formatter.date(from: day.date) else {
                 return day.date
             }
@@ -98,3 +98,49 @@
             return String(format: "%.1f mm", value)
         }
     }
+#Preview("Forecast Detail – Light") {
+    NavigationStack {
+        ForecastDetailView(
+            day: DailyForecast(
+                date: "2026-11-23T00:00:00Z",
+                minTemperature: 4.0,
+                maxTemperature: 12.0,
+                maxWindSpeed: 8.5,
+                totalPrecipitation: 2.4,
+                weatherSymbol: 3
+            )
+        )
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Forecast Detail – Dark") {
+    NavigationStack {
+        ForecastDetailView(
+            day: DailyForecast(
+                date: "2026-11-23T00:00:00Z",
+                minTemperature: -3.0,
+                maxTemperature: 2.0,
+                maxWindSpeed: 14.0,
+                totalPrecipitation: 12.0,
+                weatherSymbol: 5
+            )
+        )
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Forecast Detail – Missing Data") {
+    NavigationStack {
+        ForecastDetailView(
+            day: DailyForecast(
+                date: "2026-11-23T00:00:00Z",
+                minTemperature: nil,
+                maxTemperature: nil,
+                maxWindSpeed: nil,
+                totalPrecipitation: nil,
+                weatherSymbol: nil
+            )
+        )
+    }
+}

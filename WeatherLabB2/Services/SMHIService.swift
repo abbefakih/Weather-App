@@ -9,16 +9,15 @@ struct SMHIService {
     private let session: URLSession
 
     init(session: URLSession = .shared) {
-        self.session = session
+        self.session = session // dependency injection
     }
-
     // MARK: - Fetch forecast
 
-    func fetchForecast(
+    func fetchForecast( // hämtar data från SMHI
         latitude: Double,
         longitude: Double
     ) async throws -> [HourlyForecast] {
-
+        // guard = villkoren uppfyllda för att fortsätta
         guard (-90...90).contains(latitude),
               (-180...180).contains(longitude) else {
             throw WeatherError.invalidCoordinates
@@ -39,11 +38,11 @@ struct SMHIService {
 
         let urlString =
             "\(baseURL)/lon/\(longitudeString)/lat/\(latitudeString)/data.json"
-
+        // följer SMHI:s URL-struktur.
         guard let url = URL(string: urlString) else {
             throw WeatherError.invalidURL
         }
-
+        // Vi skapar en HTTP-förfrågan.
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.timeoutInterval = 25
@@ -80,7 +79,7 @@ struct SMHIService {
                 let precipitation = Self.validValue(
                     values["precipitation_amount_mean"]
                 )
-
+                // omvandlar väder symbolen
                 let weatherSymbol = Self.validValue(
                     values["symbol_code"]
                 ).map { Int($0.rounded()) }
@@ -165,7 +164,7 @@ struct SMHIService {
         )
     }
 
-    // MARK: - Validate API values
+    // MARK: - filtrerar bort ogiltiga API-värden
 
     private static func validValue(_ value: Double?) -> Double? {
         guard let value,

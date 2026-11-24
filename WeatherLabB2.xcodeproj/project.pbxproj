@@ -29,9 +29,33 @@
 		B38AE7AC30A4B287008E8322 /* WeatherLabB2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherLabB2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B38A966930B4505D00C28B9F /* Exceptions for "WeatherLabB2" folder in "WeatherLabB2" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Views/AdvancedWeatherDashboard.swift,
+			);
+			target = B38AE79430A4B280008E8322 /* WeatherLabB2 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		B38A966C30B450F500C28B9F /* Exceptions for "WeatherLabB2" folder in "Copy Bundle Resources" phase from "WeatherLabB2" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = B38AE79330A4B280008E8322 /* Resources */;
+			membershipExceptions = (
+				Views/AdvancedWeatherDashboard.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B38AE79730A4B280008E8322 /* WeatherLabB2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B38A966930B4505D00C28B9F /* Exceptions for "WeatherLabB2" folder in "WeatherLabB2" target */,
+				B38A966C30B450F500C28B9F /* Exceptions for "WeatherLabB2" folder in "Copy Bundle Resources" phase from "WeatherLabB2" target */,
+			);
 			path = WeatherLabB2;
 			sourceTree = "<group>";
 		};

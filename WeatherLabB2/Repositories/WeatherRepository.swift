@@ -2,7 +2,7 @@
 import Foundation
 
 final class WeatherRepository {
-
+    // instansen för att söka efter platser.
     private let geocoder = GeocodingService()
     private let service = SMHIService()
 
@@ -36,7 +36,7 @@ final class WeatherRepository {
             return
         }
 
-        let defaults = UserDefaults.standard
+        let defaults = UserDefaults.standard // lokala lagringssystem
 
         defaults.set(data, forKey: cacheKey(for: forecast.location))
         defaults.set(data, forKey: latestForecastKey)
